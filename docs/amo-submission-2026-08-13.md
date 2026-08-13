@@ -39,12 +39,13 @@ and does not complicate a listing afterwards.
    works fine too and needs no keys.
 3. ~~Decide the add-on name.~~ Settled: **Caption Scribe**. Check it is not
    already taken on AMO when you create the listing, since names must be unique.
-4. **Decide the version.** `0.1.0` reads as a preview. Consider `1.0.0` for a
-   public first release. AMO will not let you re-upload a version number, so get
-   it right the first time.
-5. **A screenshot**, ideally two: the popup open on a video, and a sample of the
-   Markdown it produces. Not strictly required, but a listing without one
-   converts badly.
+4. ~~Decide the version.~~ Settled: ship as **0.1.0**. AMO will not accept the
+   same version number twice, so the next upload must be 0.1.1 or higher.
+5. ~~A screenshot.~~ Done: `screenshots/caption-scribe-overview.png`, 1280x800,
+   showing the popup and a sample of the Markdown it produces side by side. It
+   is rendered from the real `popup.css`, so the popup in the image is the popup
+   users see. Upload it on the listing form. It is excluded from the add-on
+   package, which is why the build ignores `screenshots/`.
 
 ## Submission steps
 

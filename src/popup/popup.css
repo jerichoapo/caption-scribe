@@ -1,4 +1,9 @@
 :root {
+  /* Native widgets (select, checkbox, scrollbars) follow the OS theme unless
+     told otherwise. Without this they can render dark against the light
+     palette below, which makes the language dropdown unreadable. */
+  color-scheme: light dark;
+
   --bg: #ffffff;
   --fg: #16181d;
   --muted: #5d6470;

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light" />
+    <title>Caption Scribe listing screenshot</title>
+    <!-- The real popup stylesheet, so the rendered popup is pixel-accurate. -->
+    <link rel="stylesheet" href="../../src/popup/popup.css" />
+    <style>
+      html,
+      body {
+        width: 1280px;
+        height: 800px;
+        margin: 0;
+        overflow: hidden;
+        color-scheme: light;
+      }
+      body {
+        display: grid;
+        grid-template-columns: 340px 580px;
+        align-content: center;
+        justify-content: center;
+        column-gap: 64px;
+        background: linear-gradient(135deg, #eef1f6 0%, #dde4ee 100%);
+        font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: #16181d;
+      }
+      .col {
+        display: flex;
+        flex-direction: column;
+      }
+      .caption {
+        height: 30px;
+        font-size: 12.5px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: #58606e;
+        text-transform: uppercase;
+      }
+      .popup {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 16px 40px rgba(20, 26, 38, 0.2);
+        overflow: hidden;
+      }
+      .popup main {
+        padding: 14px;
+      }
+      /* Headless rendering leaves native selects unstyled, so draw the control
+         explicitly. This matches what the real popup shows in light mode. */
+      .popup select {
+        appearance: none;
+        background: #f6f7f9
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%235d6470'/></svg>")
+          no-repeat right 10px center;
+        color: #16181d;
+        border: 1px solid #d9dde3;
+      }
+      .doc {
+        flex: 1;
+        padding: 20px 24px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 16px 40px rgba(20, 26, 38, 0.2);
+        overflow: hidden;
+        font: 12.5px/1.62 ui-monospace, "Cascadia Mono", Consolas, monospace;
+        white-space: pre-wrap;
+        color: #22262e;
+      }
+      .fm {
+        color: #7a828f;
+      }
+      .h1 {
+        font-weight: 700;
+        color: #111418;
+      }
+      .h2 {
+        font-weight: 700;
+        color: #1f2937;
+      }
+      .ts {
+        color: #c4302b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="col">
+      <div class="caption">One click, on any video</div>
+      <div class="popup">
+        <main>
+          <section>
+            <header>
+              <h1>How Neural Networks Learn</h1>
+              <p class="muted">Demo Channel · 3 tracks</p>
+            </header>
+
+            <label class="field">
+              <span>Language</span>
+              <select>
+                <option>English</option>
+              </select>
+            </label>
+
+            <details>
+              <summary>Formatting</summary>
+            </details>
+
+            <button class="primary">Copy Markdown</button>
+
+            <details>
+              <summary>Other formats</summary>
+            </details>
+
+            <p class="status ok">Markdown copied to the clipboard.</p>
+            <p class="muted small">412 cues via transcript panel, 6 chapters</p>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="caption">What lands on your clipboard</div>
+      <div class="doc"><span class="fm">---
+title: How Neural Networks Learn
+url: "https://www.youtube.com/watch?v=exampleVid"
+channel: Demo Channel
+duration: "18:42"
+language: English
+caption_type: manual
+exported: 2026-08-13
+---</span>
+
+<span class="h1"># How Neural Networks Learn</span>
+
+<span class="h2">## Why the problem is hard</span>
+
+<span class="ts">[0:00]</span> Good morning, and thanks for joining. Today I want
+to cover three things, and the first is why this problem
+is harder than it looks from the outside.
+
+<span class="ts">[1:47]</span> It is not simple once you look closely. The
+sequential dependency is the whole issue, and everything
+after this follows from it.
+
+<span class="h2">## What to do about it</span>
+
+<span class="ts">[4:12]</span> There is a short answer and a long one. We will
+start with the short answer, then come back and fill in
+the parts that matter.</div>
+    </div>
+  </body>
+</html>
