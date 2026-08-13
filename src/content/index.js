@@ -83,6 +83,8 @@ var YTCMD = YTCMD || {};
         tracks: outcome.tracks.map(stripBaseUrl),
         source: outcome.source,
         timingsSynthesized: outcome.timingsSynthesized,
+        panelLanguage: outcome.panelLanguage ?? null,
+        languageHonoured: outcome.languageHonoured !== false,
       };
     } catch (error) {
       return {

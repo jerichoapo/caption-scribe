@@ -63,6 +63,22 @@ export function parseTranscriptLanguages(input) {
   return found;
 }
 
+/**
+ * The language the panel actually returned, read from the footer menu's
+ * selected entry.
+ *
+ * This is authoritative. The language a user asks for and the language they get
+ * are not always the same, because only the direct-fetch path honours an
+ * explicit choice and that path is token-gated on most videos. The document
+ * must report what it contains rather than what was requested.
+ *
+ * Returns null when the video offers one language and so renders no menu.
+ */
+export function selectedTranscriptLanguage(input) {
+  const found = parseTranscriptLanguages(input).find((item) => item.selected);
+  return found?.title ?? null;
+}
+
 function collect(node, depth, segments, headers) {
   walk(node, depth, (n) => {
     if (n.transcriptSegmentRenderer) segments.push(n.transcriptSegmentRenderer);

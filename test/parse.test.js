@@ -8,6 +8,7 @@ import { parseSrt } from '../src/core/parse/srt.js';
 import {
   parseGetTranscript,
   parseTranscriptLanguages,
+  selectedTranscriptLanguage,
 } from '../src/core/parse/getTranscript.js';
 import { fixture } from './helpers.js';
 
@@ -121,6 +122,24 @@ test('get_transcript parser survives a changed renderer path', () => {
   const { cues } = parseGetTranscript(reshaped);
   assert.equal(cues.length, 1);
   assert.equal(cues[0].text, 'still found');
+});
+
+test('selectedTranscriptLanguage reports what the panel actually returned', () => {
+  assert.equal(selectedTranscriptLanguage(fixture('get_transcript.json')), 'English');
+
+  // A different entry selected must change the answer, since this value is what
+  // the exported document will claim it contains.
+  const german = JSON.parse(fixture('get_transcript.json'));
+  const items =
+    german.actions[0].updateEngagementPanelAction.content.transcriptRenderer.content
+      .transcriptSearchPanelRenderer.footer.transcriptFooterRenderer.languageMenu
+      .sortFilterSubMenuRenderer.subMenuItems;
+  items[0].selected = false;
+  items[1].selected = true;
+  assert.equal(selectedTranscriptLanguage(german), 'German');
+
+  // No menu at all (single-language video) must yield null, never a guess.
+  assert.equal(selectedTranscriptLanguage({ actions: [] }), null);
 });
 
 test('get_transcript language menu is readable', () => {

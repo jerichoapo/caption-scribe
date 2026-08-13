@@ -102,10 +102,25 @@ core directly. That split is why no bundler is needed.
 Every YouTube DOM selector lives in `src/content/selectors.js`, each as a list
 tried in order. A YouTube redesign should be a one-file fix.
 
+## Language selection
+
+Only rung 2 can request a language directly, and it is token-gated on most
+videos. When the panel answers instead, it opens in whichever language it
+prefers, which need not be the one asked for.
+
+Two mechanisms cover this. If the user picked a track explicitly, the panel's
+own footer language menu is driven so the page reissues its request in that
+language, and the interceptor captures the result. If that switch cannot be
+made, the export still proceeds but the popup says so and names the language it
+actually got.
+
+Independently of either, the language written into the document is read from the
+payload's own footer menu rather than from what was requested. A document never
+claims a language it does not contain. Where the language genuinely cannot be
+determined, the frontmatter omits it rather than guessing.
+
 ## Known limits
 
-- Explicit language selection only works through rung 2, which is token-gated on
-  most videos. The panel rungs return whichever language the panel offers.
 - Live streams in progress are refused.
 - Rungs 3 and 4 briefly open and re-close the transcript panel.
 - Playlist and channel batch export are not implemented.

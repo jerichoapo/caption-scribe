@@ -29,6 +29,21 @@ YTCMD.SELECTORS = {
   transcriptSegment: ['ytd-transcript-segment-renderer'],
   segmentTimestamp: ['.segment-timestamp', '[class*="segment-timestamp"]'],
   segmentText: ['.segment-text', 'yt-formatted-string.segment-text'],
+  // The language selector in the transcript panel footer. Clicking through it
+  // makes the page refetch the transcript in that language, which the
+  // interceptor then captures.
+  languageMenuTrigger: [
+    'ytd-transcript-footer-renderer tp-yt-paper-button',
+    'ytd-transcript-footer-renderer #label',
+    'ytd-transcript-footer-renderer ytd-menu-renderer',
+    'ytd-transcript-footer-renderer yt-dropdown-menu',
+  ],
+  languageMenuItems: [
+    'tp-yt-iron-dropdown tp-yt-paper-listbox ytd-menu-service-item-renderer',
+    'tp-yt-iron-dropdown tp-yt-paper-listbox tp-yt-paper-item',
+    'ytd-menu-popup-renderer ytd-menu-service-item-renderer',
+    'tp-yt-paper-listbox ytd-menu-service-item-renderer',
+  ],
   // Panel close button.
   closePanel: [
     'ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-searchable-transcript"] #visibility-button button',

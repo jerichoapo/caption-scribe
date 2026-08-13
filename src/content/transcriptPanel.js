@@ -66,6 +66,70 @@ YTCMD.panel = (() => {
     }
   }
 
+  /** The language the panel footer currently shows, as displayed text. */
+  function currentLanguageLabel() {
+    const trigger = YTCMD.pick(YTCMD.SELECTORS.languageMenuTrigger);
+    const text = trigger?.textContent?.trim();
+    return text || null;
+  }
+
+  /**
+   * Switch the panel to another language by driving its own footer menu.
+   *
+   * This is the only way to honour an explicit language choice on a
+   * token-gated video: the page reissues its own transcript request, which the
+   * interceptor captures. Returns true only when a matching entry was found and
+   * clicked, so the caller can tell the difference between "switched" and
+   * "could not switch" rather than silently returning the wrong language.
+   */
+  async function selectLanguage(wanted) {
+    if (!wanted) return false;
+    const trigger = YTCMD.pick(YTCMD.SELECTORS.languageMenuTrigger);
+    if (!trigger) return false;
+
+    if (matchesLanguage(currentLanguageLabel(), wanted)) return true;
+
+    trigger.click();
+    const items = await waitFor(
+      () => {
+        const found = YTCMD.pickAll(YTCMD.SELECTORS.languageMenuItems);
+        return found.length ? found : null;
+      },
+      { timeout: 2500 }
+    );
+    if (!items) return false;
+
+    const target = items.find((item) => matchesLanguage(item.textContent, wanted));
+    if (!target) {
+      // Leave the page as we found it rather than stranding an open menu.
+      document.body?.click();
+      return false;
+    }
+
+    target.click();
+    await sleep(250);
+    return true;
+  }
+
+  /**
+   * Loose comparison of language labels. YouTube writes "English
+   * (auto-generated)" in the menu where the track list says "English (auto)",
+   * so an exact match is too strict.
+   */
+  function matchesLanguage(label, wanted) {
+    if (!label || !wanted) return false;
+    const normalize = (s) =>
+      String(s)
+        .toLowerCase()
+        .replace(/\(auto-generated\)|\(auto\)/g, 'auto')
+        .replace(/[^\p{L}\p{N}]+/gu, ' ')
+        .trim();
+    const a = normalize(label);
+    const b = normalize(wanted);
+    if (!a || !b) return false;
+    return a === b || a.startsWith(b) || b.startsWith(a);
+  }
+
   /**
    * Read the rendered rows. Start times only, so ends are inferred from the
    * next row and the result is marked as approximate.
@@ -109,5 +173,5 @@ YTCMD.panel = (() => {
     return n.length === 3 ? n[0] * 3600 + n[1] * 60 + n[2] : n[0] * 60 + n[1];
   }
 
-  return { open, close, isOpen, scrape };
+  return { open, close, isOpen, scrape, selectLanguage, currentLanguageLabel };
 })();

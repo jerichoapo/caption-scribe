@@ -80,10 +80,37 @@ YTCMD.acquire = (function () {
       throw fail('PANEL_FAILED', 'Could not open the transcript panel.');
     }
 
-    const captured = await YTCMD.bridge.waitFor(videoId, 'getTranscript', 6000);
+    let captured = await YTCMD.bridge.waitFor(videoId, 'getTranscript', 6000);
+
+    // The panel opens in whatever language it prefers, which is not necessarily
+    // the one asked for. When the user picked a track explicitly, drive the
+    // panel's own language menu so the page reissues the request. This is the
+    // only way to honour a language choice on a token-gated video.
+    let languageHonoured = true;
+    if (captured?.body && preferredTrackIndex !== null && chosen) {
+      const showing = YTCMD.panel.currentLanguageLabel();
+      if (!looksLikeSameLanguage(showing, chosen.name)) {
+        onProgress(`Switching to ${chosen.name}`);
+        const before = captured.at;
+        const switched = await YTCMD.panel.selectLanguage(chosen.name);
+        if (switched) {
+          const fresh = await waitForNewCapture(videoId, before, 5000);
+          if (fresh?.body) captured = fresh;
+          else languageHonoured = false;
+        } else {
+          languageHonoured = false;
+        }
+      }
+    }
+
     if (captured?.body) {
+      const panelLanguage = YTCMD.panel.currentLanguageLabel();
       if (weOpenedIt) await YTCMD.panel.close();
-      return result(captured.body, meta, chosen, tracks, 'panel-network', false);
+      return {
+        ...result(captured.body, meta, chosen, tracks, 'panel-network', false),
+        panelLanguage,
+        languageHonoured,
+      };
     }
 
     // 4. The panel is open but its network response never landed. Read the DOM.
@@ -109,6 +136,31 @@ YTCMD.acquire = (function () {
       'Captions exist but could not be read. Turn captions on during playback, ' +
         'then try again.'
     );
+  }
+
+  /** Wait for a capture newer than the one we already had. */
+  async function waitForNewCapture(videoId, sinceAt, timeoutMs) {
+    const started = Date.now();
+    for (;;) {
+      const current = YTCMD.bridge.get(videoId, 'getTranscript');
+      if (current?.body && current.at !== sinceAt) return current;
+      if (Date.now() - started > timeoutMs) return null;
+      await new Promise((r) => setTimeout(r, 150));
+    }
+  }
+
+  /** Same loose comparison the panel driver uses, for the pre-switch check. */
+  function looksLikeSameLanguage(a, b) {
+    if (!a || !b) return false;
+    const normalize = (s) =>
+      String(s)
+        .toLowerCase()
+        .replace(/\(auto-generated\)|\(auto\)/g, 'auto')
+        .replace(/[^\p{L}\p{N}]+/gu, ' ')
+        .trim();
+    const x = normalize(a);
+    const y = normalize(b);
+    return Boolean(x && y && (x === y || x.startsWith(y) || y.startsWith(x)));
   }
 
   function pickDefaultTrack(tracks) {

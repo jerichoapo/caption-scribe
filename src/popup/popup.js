@@ -10,6 +10,7 @@ import {
   filenameFor,
   subtitlesAreTrustworthy,
 } from '../core/pipeline.js';
+import { selectedTranscriptLanguage } from '../core/parse/getTranscript.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
 const ORIGINS = ['*://*.youtube.com/*'];
@@ -159,9 +160,7 @@ async function extract() {
       durationSec: response.meta?.durationSec,
       description: response.meta?.description,
       chapters: response.meta?.chapters,
-      lang: response.track?.lang,
-      langName: response.track?.name,
-      kind: response.track?.kind,
+      ...resolveLanguage(response),
       source: response.source,
       timingsSynthesized: response.timingsSynthesized,
       exported: today(),
@@ -175,11 +174,82 @@ async function extract() {
 
   state.lastResult = { transcript, source: response.source };
   updateSubtitleAvailability(transcript);
+  updateLanguageWarning(response, transcript);
   el('diagnostic').textContent =
     `${transcript.cues.length} cues via ${sourceLabel(response.source)}` +
+    (transcript.langName ? `, ${transcript.langName}` : '') +
     (transcript.chapters.length ? `, ${transcript.chapters.length} chapters` : '');
 
   return transcript;
+}
+
+/**
+ * Decide what language the document should claim.
+ *
+ * Only the direct-fetch path honours an explicit choice, and it is token-gated
+ * on most videos. When the panel answered, the language is whatever the panel
+ * returned, so read it from the payload rather than asserting what was asked
+ * for. Where it genuinely cannot be determined, say nothing: a missing language
+ * line is better than a wrong one.
+ */
+function resolveLanguage(response) {
+  const fromPanel =
+    response.source === 'panel-network' || response.source === 'panel-dom';
+
+  if (!fromPanel) {
+    return {
+      lang: response.track?.lang,
+      langName: response.track?.name,
+      kind: response.track?.kind,
+    };
+  }
+
+  const detected =
+    (response.source === 'panel-network'
+      ? safeSelectedLanguage(response.raw)
+      : null) ?? response.panelLanguage;
+
+  if (detected) {
+    // A display name, not a language code, and `kind` is left undefined so the
+    // pipeline infers manual or auto from the punctuation it can see.
+    return { lang: null, langName: detected, kind: undefined };
+  }
+
+  // A single-track video can only have returned that track.
+  if ((response.tracks?.length ?? 0) <= 1) {
+    return {
+      lang: response.track?.lang,
+      langName: response.track?.name,
+      kind: response.track?.kind,
+    };
+  }
+
+  return { lang: null, langName: null, kind: undefined };
+}
+
+function safeSelectedLanguage(raw) {
+  try {
+    return selectedTranscriptLanguage(raw);
+  } catch {
+    return null;
+  }
+}
+
+function updateLanguageWarning(response, transcript) {
+  const node = el('language-warning');
+  if (!node) return;
+  const requested = response.track?.name;
+  const got = transcript.langName;
+
+  if (response.languageHonoured === false && requested) {
+    node.textContent = got
+      ? `Could not switch to ${requested}. This transcript is ${got}.`
+      : `Could not switch to ${requested}. This transcript is in whichever ` +
+        `language the transcript panel offered.`;
+    node.removeAttribute('hidden');
+    return;
+  }
+  node.setAttribute('hidden', '');
 }
 
 function updateSubtitleAvailability(transcript) {
