@@ -168,7 +168,7 @@ subtitles, notes. **License:** MIT, matching the LICENSE file in the repo.
 > **No data collection.** Nothing leaves the browser. The manifest declares
 > `data_collection_permissions: { required: ["none"] }`.
 >
-> **Source.** https://github.com/jerichoapo/yt-captions-md, including a test
+> **Source.** https://github.com/jerichoapo/caption-scribe, including a test
 > suite (`npm test`, 62 tests) covering the parsing and formatting core.
 
 ## What could get this rejected

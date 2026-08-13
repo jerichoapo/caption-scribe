@@ -3,9 +3,6 @@
 A Firefox extension that exports the captions of a YouTube video as clean,
 readable Markdown. Also exports plain text, SubRip, and WebVTT.
 
-The repository directory is still `yt-captions-md`, which predates the name.
-Only the shipped add-on is called Caption Scribe.
-
 It reflows the fragmentary caption cues into paragraphs rather than dumping one
 line per cue, removes the roll-up duplication that makes auto-caption exports
 unreadable, and carries chapter headings and clickable timestamps through to the

@@ -42,4 +42,4 @@ Uninstalling the add-on removes them.
 
 ## Contact
 
-Issues and questions: https://github.com/jerichoapo/yt-captions-md/issues
+Issues and questions: https://github.com/jerichoapo/caption-scribe/issues
