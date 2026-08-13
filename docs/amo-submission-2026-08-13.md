@@ -1,6 +1,11 @@
-# Submitting to addons.mozilla.org
+# Submitting Caption Scribe to addons.mozilla.org
 
 Prepared 2026-08-13, for version 0.1.0.
+
+The add-on is named **Caption Scribe**, settled 2026-08-13. The name carries no
+trademark, which removes the most likely rejection reason. The service it works
+on is named only in the summary and description, which is descriptive use and
+the pattern add-ons in this category survive on.
 
 ## Pick the channel first
 
@@ -32,8 +37,8 @@ and does not complicate a listing afterwards.
    Developer Hub → Manage API Keys. Set them as `WEB_EXT_API_KEY` and
    `WEB_EXT_API_SECRET` in your own shell. Never commit them. The web upload form
    works fine too and needs no keys.
-3. **Decide the add-on name.** See the trademark risk below. This is the single
-   most likely reason for a bounce and it is worth settling before you upload.
+3. ~~Decide the add-on name.~~ Settled: **Caption Scribe**. Check it is not
+   already taken on AMO when you create the listing, since names must be unique.
 4. **Decide the version.** `0.1.0` reads as a preview. Consider `1.0.0` for a
    public first release. AMO will not let you re-upload a version number, so get
    it right the first time.
@@ -169,13 +174,10 @@ subtitles, notes. **License:** MIT, matching the LICENSE file in the repo.
 
 Ranked by how likely I think each one is.
 
-1. **The add-on name.** Mozilla's policies restrict using another company's
-   trademark in an add-on name in a way that implies affiliation. A name that
-   leads with a trademarked service name is a well-known bounce. Consider a
-   distinct name with the service mentioned only in the summary and description,
-   which is the pattern most surviving add-ons in this category follow. Changing
-   the name means editing `manifest.json`, the README, and the listing, so decide
-   before you upload rather than after.
+1. ~~**The add-on name.**~~ **Resolved 2026-08-13.** Renamed to Caption Scribe,
+   which carries no trademark. The service appears only in the summary and
+   description, as descriptive use. This was the highest-ranked risk and it is
+   now gone, which makes the interceptor below the leading one.
 2. **The page-world interceptor.** Patching `fetch` and `XMLHttpRequest` is
    exactly the shape of a lot of malicious code, and a reviewer is right to look
    hard at it. The reviewer notes above exist for this. The defensible facts are

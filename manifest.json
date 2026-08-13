@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Captions to Markdown",
+  "name": "Caption Scribe",
   "version": "0.1.0",
   "description": "Export the captions of a YouTube video as clean, readable Markdown.",
 
@@ -18,7 +18,7 @@
   "host_permissions": ["*://*.youtube.com/*"],
 
   "action": {
-    "default_title": "Captions to Markdown",
+    "default_title": "Caption Scribe",
     "default_popup": "src/popup/popup.html",
     "default_icon": { "48": "icons/icon.svg", "96": "icons/icon.svg" }
   },

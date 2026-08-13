@@ -1,4 +1,4 @@
-# Privacy policy
+# Privacy policy: Caption Scribe
 
 Last updated 2026-08-13.
 

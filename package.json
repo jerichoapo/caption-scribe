@@ -1,7 +1,7 @@
 {
-  "name": "yt-captions-md",
+  "name": "caption-scribe",
   "version": "0.1.0",
-  "description": "Firefox extension that exports YouTube captions as clean Markdown.",
+  "description": "Caption Scribe: a Firefox extension that exports YouTube captions as clean Markdown.",
   "type": "module",
   "private": true,
   "scripts": {
