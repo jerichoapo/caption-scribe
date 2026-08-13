@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Captions to Markdown options</title>
+    <link rel="stylesheet" href="../popup/popup.css" />
+    <style>
+      body {
+        width: auto;
+        max-width: 520px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Captions to Markdown</h1>
+      <p class="muted">
+        Formatting defaults live in the popup. These are the settings that do not
+        belong there.
+      </p>
+
+      <label class="field">
+        <span>Filename pattern</span>
+        <input id="filenamePattern" type="text" />
+      </label>
+      <p class="muted small">
+        Tokens: <code>{date}</code>, <code>{slug}</code>, <code>{title}</code>,
+        <code>{id}</code>, <code>{lang}</code>, <code>{channel}</code>. The
+        extension is added automatically.
+      </p>
+
+      <label class="field">
+        <span>Paragraph pause threshold (seconds)</span>
+        <input id="gapThreshold" type="number" min="0.5" max="10" step="0.5" />
+      </label>
+
+      <label class="field">
+        <span>Timestamp interval (minutes)</span>
+        <input id="intervalMinutes" type="number" min="1" max="60" step="1" />
+      </label>
+
+      <button id="reset">Reset to defaults</button>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

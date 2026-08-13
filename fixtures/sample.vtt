@@ -1,0 +1,16 @@
+WEBVTT
+Kind: captions
+Language: en
+
+NOTE
+This block should be skipped entirely.
+
+intro-cue
+00:00:00.000 --> 00:00:02.500 align:start position:0%
+<c.colorE5E5E5>Opening line</c> of the video
+
+00:00:02.500 --> 00:00:05.000
+Second line with <00:00:03.100><c>inline</c> timing tags
+
+00:00:05.000 --> 00:00:07.400
+Third line &amp; an entity

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Captions to Markdown</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main id="app">
+      <!-- Host permission not yet granted (Firefox MV3 makes it optional). -->
+      <section id="permission" hidden>
+        <h1>Access needed</h1>
+        <p>
+          This add-on needs permission to read youtube.com pages before it can
+          export anything.
+        </p>
+        <button id="grant" class="primary">Grant access to YouTube</button>
+      </section>
+
+      <!-- Not on a watch page. -->
+      <section id="idle" hidden>
+        <h1>No video</h1>
+        <p>Open a YouTube video, then run this again.</p>
+      </section>
+
+      <!-- Main surface. -->
+      <section id="main" hidden>
+        <header>
+          <h1 id="title">Loading</h1>
+          <p id="subtitle" class="muted"></p>
+        </header>
+
+        <label class="field">
+          <span>Language</span>
+          <select id="track"></select>
+        </label>
+
+        <details id="options">
+          <summary>Formatting</summary>
+          <div class="options-grid">
+            <label class="field">
+              <span>Timestamps</span>
+              <select id="timestamps">
+                <option value="paragraph">Every paragraph</option>
+                <option value="interval">Every few minutes</option>
+                <option value="none">None</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Frontmatter</span>
+              <select id="frontmatter">
+                <option value="full">Full</option>
+                <option value="minimal">Minimal</option>
+                <option value="none">None</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Paragraph size</span>
+              <select id="wordBudget">
+                <option value="60">Short</option>
+                <option value="100">Medium</option>
+                <option value="160">Long</option>
+              </select>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="headings" />
+              <span>Chapter headings</span>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="linkTimestamps" />
+              <span>Link timestamps</span>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="capitalize" />
+              <span>Capitalize paragraphs</span>
+            </label>
+          </div>
+        </details>
+
+        <button id="copy" class="primary">Copy Markdown</button>
+
+        <details id="more">
+          <summary>Other formats</summary>
+          <div class="button-row">
+            <button data-action="download" data-format="md">Download .md</button>
+            <button data-action="download" data-format="txt">Download .txt</button>
+            <button data-action="download" data-format="srt" id="srt-button">
+              Download .srt
+            </button>
+            <button data-action="download" data-format="vtt" id="vtt-button">
+              Download .vtt
+            </button>
+          </div>
+          <p id="subtitle-warning" class="warning" hidden>
+            Subtitle export is off because these timings were read from the
+            transcript panel, which shows only start times. The end times would
+            be invented.
+          </p>
+        </details>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <p id="diagnostic" class="muted small"></p>
+      </section>
+    </main>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

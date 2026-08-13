@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Captions to Markdown",
+  "version": "0.1.0",
+  "description": "Export the captions of a YouTube video as clean, readable Markdown.",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "yt-captions-md@jerichoapo",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+
+  "permissions": ["storage", "downloads"],
+  "host_permissions": ["*://*.youtube.com/*"],
+
+  "action": {
+    "default_title": "Captions to Markdown",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": { "48": "icons/icon.svg", "96": "icons/icon.svg" }
+  },
+
+  "icons": { "48": "icons/icon.svg", "96": "icons/icon.svg" },
+
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": false
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["src/content/interceptor.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": false
+    },
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": [
+        "src/content/selectors.js",
+        "src/content/bridge.js",
+        "src/content/playerResponse.js",
+        "src/content/videoMeta.js",
+        "src/content/transcriptPanel.js",
+        "src/content/acquire.js",
+        "src/content/index.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+
+  "commands": {
+    "_execute_action": {
+      "suggested_key": { "default": "Ctrl+Shift+Y" },
+      "description": "Open Captions to Markdown"
+    }
+  }
+}

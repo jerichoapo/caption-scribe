@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<timedtext format="3">
+  <head>
+    <wp id="0" ap="6" ah="20" av="100" rc="2" cc="40" />
+    <ws id="0" mh="2" ju="0" sd="3" />
+  </head>
+  <body>
+    <p t="0" d="2500" w="1"><s t="0">First</s><s t="400"> chunk</s><s t="900"> here</s></p>
+    <p t="2500" d="3000" w="1"><s t="0">Second</s><s t="600"> chunk</s></p>
+    <p t="5500" d="10" w="1">
+</p>
+    <p t="5510" d="2200" w="1"><s t="0">Third</s><s t="500"> chunk</s></p>
+  </body>
+</timedtext>

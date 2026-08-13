@@ -1,0 +1,45 @@
+{
+  "wireMagic": "pb3",
+  "events": [
+    {
+      "tStartMs": 0,
+      "dDurationMs": 2800,
+      "segs": [{ "utf8": "Good morning, and thanks for joining." }]
+    },
+    {
+      "tStartMs": 2800,
+      "dDurationMs": 2600,
+      "segs": [{ "utf8": "Today I want to cover three things." }]
+    },
+    {
+      "tStartMs": 5400,
+      "dDurationMs": 3000,
+      "segs": [{ "utf8": "The first is why this problem is hard." }]
+    },
+    {
+      "tStartMs": 8400,
+      "dDurationMs": 2600,
+      "segs": [{ "utf8": "It looks simple from the outside." }]
+    },
+    {
+      "tStartMs": 11000,
+      "dDurationMs": 3200,
+      "segs": [{ "utf8": "It is not simple once you look closely." }]
+    },
+    {
+      "tStartMs": 20000,
+      "dDurationMs": 3000,
+      "segs": [{ "utf8": "The second is what to do about it." }]
+    },
+    {
+      "tStartMs": 23000,
+      "dDurationMs": 3400,
+      "segs": [{ "utf8": "There is a short answer &amp; a long one." }]
+    },
+    {
+      "tStartMs": 26400,
+      "dDurationMs": 2600,
+      "segs": [{ "utf8": "We will start with the short answer." }]
+    }
+  ]
+}

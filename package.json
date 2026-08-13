@@ -1,0 +1,17 @@
+{
+  "name": "yt-captions-md",
+  "version": "0.1.0",
+  "description": "Firefox extension that exports YouTube captions as clean Markdown.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/",
+    "lint": "web-ext lint --source-dir=.",
+    "start": "web-ext run --source-dir=. --start-url=https://www.youtube.com/watch?v=aircAruvnKk",
+    "build": "web-ext build --source-dir=. --overwrite-dest",
+    "sign": "web-ext sign --source-dir=. --channel=unlisted"
+  },
+  "devDependencies": {
+    "web-ext": "^8.3.0"
+  }
+}

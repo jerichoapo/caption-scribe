@@ -1,0 +1,83 @@
+{
+  "responseContext": {},
+  "actions": [
+    {
+      "updateEngagementPanelAction": {
+        "targetId": "engagement-panel-searchable-transcript",
+        "content": {
+          "transcriptRenderer": {
+            "content": {
+              "transcriptSearchPanelRenderer": {
+                "body": {
+                  "transcriptSegmentListRenderer": {
+                    "initialSegments": [
+                      {
+                        "transcriptSectionHeaderRenderer": {
+                          "startMs": "0",
+                          "snippet": { "runs": [{ "text": "Opening" }] }
+                        }
+                      },
+                      {
+                        "transcriptSegmentRenderer": {
+                          "startMs": "0",
+                          "endMs": "4000",
+                          "snippet": {
+                            "runs": [
+                              {
+                                "text": "This is the opening section of the video and it runs for a while."
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "transcriptSegmentRenderer": {
+                          "startMs": "4000",
+                          "endMs": "8000",
+                          "snippet": {
+                            "runs": [
+                              { "text": "It sets up the problem before anything else happens." }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "transcriptSectionHeaderRenderer": {
+                          "startMs": "20000",
+                          "snippet": { "runs": [{ "text": "The middle part" }] }
+                        }
+                      },
+                      {
+                        "transcriptSegmentRenderer": {
+                          "startMs": "20000",
+                          "endMs": "24000",
+                          "snippet": {
+                            "runs": [
+                              { "text": "Now we move into the middle section of the talk." }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "footer": {
+                  "transcriptFooterRenderer": {
+                    "languageMenu": {
+                      "sortFilterSubMenuRenderer": {
+                        "subMenuItems": [
+                          { "title": "English", "selected": true },
+                          { "title": "German", "selected": false }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
