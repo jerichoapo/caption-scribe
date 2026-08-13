@@ -57,7 +57,7 @@
   "commands": {
     "_execute_action": {
       "suggested_key": { "default": "Ctrl+Shift+Y" },
-      "description": "Open Captions to Markdown"
+      "description": "Open Caption Scribe"
     }
   }
 }
