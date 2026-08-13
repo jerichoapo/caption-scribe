@@ -154,6 +154,23 @@ subtitles, notes. **License:** MIT, matching the LICENSE file in the repo.
 > manifest requests no `webRequest`, no `webRequestBlocking`, and no
 > `<all_urls>`.
 >
+> **Why the add-on clicks things on the page.** Disclosing this because
+> programmatic clicking is another pattern worth scrutiny.
+>
+> When the direct fetch returns nothing, the add-on opens YouTube's own
+> "Show transcript" panel by clicking the description expander and then the
+> transcript button (`src/content/transcriptPanel.js`). Opening that panel makes
+> the page request its own transcript, which the interceptor then reads. If the
+> user picked a specific language, the panel's footer language menu is clicked
+> through as well, so the page reissues its request in that language. This is the
+> only way to honour a language choice on a token-gated video.
+>
+> All of it happens only in response to an explicit user click on the add-on's
+> own button, never on page load and never in the background. The panel is closed
+> again afterwards if the add-on was the one that opened it, so the page is left
+> as it was found. No clicks are performed on anything outside the transcript
+> panel, and nothing is clicked that the user could not click themselves.
+>
 > **Permissions.**
 > - `*://*.youtube.com/*`: the only site the add-on runs on. Required to read the
 >   page and its caption data.
@@ -168,8 +185,12 @@ subtitles, notes. **License:** MIT, matching the LICENSE file in the repo.
 > **No data collection.** Nothing leaves the browser. The manifest declares
 > `data_collection_permissions: { required: ["none"] }`.
 >
-> **Source.** https://github.com/jerichoapo/caption-scribe, including a test
-> suite (`npm test`, 62 tests) covering the parsing and formatting core.
+> **Source.** https://github.com/jerichoapo/caption-scribe, public and MIT
+> licensed. `npm install && npm test` runs 63 tests covering the parsing,
+> deduplication, reflow, and formatting core, which has no browser dependencies.
+> `npm run lint` runs web-ext's validator and reports zero errors, notices, and
+> warnings. The caption fixtures in `fixtures/` are synthetic and written for this
+> repository, so the test suite contains no third-party content.
 
 ## What could get this rejected
 
