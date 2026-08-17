@@ -11,6 +11,7 @@ import {
   subtitlesAreTrustworthy,
 } from '../core/pipeline.js';
 import { selectedTranscriptLanguage } from '../core/parse/getTranscript.js';
+import { describePayload } from '../core/describe.js';
 
 const api = globalThis.browser ?? globalThis.chrome;
 const ORIGINS = ['*://*.youtube.com/*'];
@@ -177,17 +178,26 @@ async function extract() {
     response.format
   );
 
+  // Set the diagnostic before the empty check, so a failure still reports which
+  // rung answered instead of throwing away the only clue.
+  el('diagnostic').textContent =
+    `${transcript.cues.length} cues via ${sourceLabel(response.source)}` +
+    (transcript.langName ? `, ${transcript.langName}` : '') +
+    (transcript.chapters.length ? `, ${transcript.chapters.length} chapters` : '');
+
   if (transcript.cues.length === 0) {
-    throw new Error('The caption track came back empty.');
+    // Something returned a payload that parsed to nothing. The useful question
+    // is what shape it actually had, since a parser finding zero cues usually
+    // means it is looking for a renderer key that no longer exists.
+    const shape = describePayload(response.raw);
+    el('diagnostic').textContent =
+      `0 cues via ${sourceLabel(response.source)} · ${shape.summary}`;
+    throw new Error('The caption track parsed to nothing. See the line below.');
   }
 
   state.lastResult = { transcript, source: response.source };
   updateSubtitleAvailability(transcript);
   updateLanguageWarning(response, transcript);
-  el('diagnostic').textContent =
-    `${transcript.cues.length} cues via ${sourceLabel(response.source)}` +
-    (transcript.langName ? `, ${transcript.langName}` : '') +
-    (transcript.chapters.length ? `, ${transcript.chapters.length} chapters` : '');
 
   return transcript;
 }
