@@ -90,36 +90,45 @@ async function start() {
 
   state.videoId = status.videoId;
   state.tracks = status.tracks ?? [];
+  state.tracksKnown = status.tracksKnown !== false;
 
   show('main');
   el('title').textContent = status.meta?.title ?? 'Untitled video';
-  el('subtitle').textContent = [status.meta?.channel, trackSummary(state.tracks)]
+  el('subtitle').textContent = [
+    status.meta?.channel,
+    trackSummary(state.tracks, state.tracksKnown),
+  ]
     .filter(Boolean)
     .join(' · ');
 
-  populateTracks(state.tracks);
+  populateTracks(state.tracks, state.tracksKnown);
   el('copy').addEventListener('click', onCopy);
   for (const button of document.querySelectorAll('[data-action="download"]')) {
     button.addEventListener('click', () => onDownload(button.dataset.format));
   }
 
-  if (state.tracks.length === 0) {
+  // Only refuse up front when we positively know there are no captions. An
+  // unreadable player response also yields an empty list, and treating that as
+  // "no captions" would block a video that has them.
+  if (state.tracks.length === 0 && state.tracksKnown) {
     setStatus('This video has no caption tracks.', 'err');
     el('copy').disabled = true;
   }
 }
 
-function trackSummary(tracks) {
-  if (tracks.length === 0) return 'No captions';
+function trackSummary(tracks, tracksKnown) {
+  if (tracks.length === 0) return tracksKnown ? 'No captions' : 'Captions unknown';
   return tracks.length === 1 ? '1 track' : `${tracks.length} tracks`;
 }
 
-function populateTracks(tracks) {
+function populateTracks(tracks, tracksKnown) {
   const select = el('track');
   select.innerHTML = '';
   if (tracks.length === 0) {
     const option = document.createElement('option');
-    option.textContent = 'None available';
+    // The panel path does not need a track list, so an unknown list is still
+    // worth an attempt. Say which case this is rather than implying failure.
+    option.textContent = tracksKnown ? 'None available' : 'Default';
     select.appendChild(option);
     select.disabled = true;
     return;

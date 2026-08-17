@@ -37,14 +37,22 @@ YTCMD.acquire = (function () {
       );
     }
 
-    if (tracks.length === 0) {
+    // An empty track list means one of two very different things. If a real
+    // player response was read, the video genuinely has no captions. If it
+    // could not be read, we simply do not know, and saying "no captions" would
+    // be wrong. In that case carry on down the ladder: the transcript panel
+    // works without the track list entirely.
+    const tracksKnown = YTCMD.playerResponse.isUsable(player);
+    if (tracks.length === 0 && tracksKnown) {
       throw fail('NO_CAPTIONS', 'This video has no caption tracks.');
     }
 
     const chosen =
-      preferredTrackIndex !== null && tracks[preferredTrackIndex]
-        ? tracks[preferredTrackIndex]
-        : pickDefaultTrack(tracks);
+      tracks.length === 0
+        ? null
+        : preferredTrackIndex !== null && tracks[preferredTrackIndex]
+          ? tracks[preferredTrackIndex]
+          : pickDefaultTrack(tracks);
 
     // 1. Anything the interceptor already captured for this video.
     const cached =
@@ -56,11 +64,14 @@ YTCMD.acquire = (function () {
     }
 
     // 2. Direct fetch. Silent and fast, and the only rung that honours an
-    //    explicit language choice, so it is always worth one attempt.
-    onProgress('Fetching caption track');
-    const direct = await YTCMD.playerResponse.fetchTrack(chosen);
-    if (direct) {
-      return result(direct, meta, chosen, tracks, 'playerResponse', false);
+    //    explicit language choice, so it is always worth one attempt. Skipped
+    //    when the track list is unknown, since there is no URL to fetch.
+    if (chosen) {
+      onProgress('Fetching caption track');
+      const direct = await YTCMD.playerResponse.fetchTrack(chosen);
+      if (direct) {
+        return result(direct, meta, chosen, tracks, 'playerResponse', false);
+      }
     }
 
     // 3. Let the page fetch it. The interceptor reads the response.
@@ -72,9 +83,9 @@ YTCMD.acquire = (function () {
       if (err?.message === 'NO_TRANSCRIPT_BUTTON') {
         throw fail(
           'NO_PANEL',
-          'This video has caption tracks but no transcript panel, and the ' +
-            'caption endpoint is token-gated. Turn captions on during playback, ' +
-            'then try again.'
+          'No transcript panel on this video, and the caption endpoint is ' +
+            'token-gated. Turn captions on during playback, then try again. ' +
+            'If the video has no captions at all, there is nothing to export.'
         );
       }
       throw fail('PANEL_FAILED', 'Could not open the transcript panel.');

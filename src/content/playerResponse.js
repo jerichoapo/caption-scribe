@@ -11,6 +11,18 @@ var YTCMD = YTCMD || {};
 YTCMD.playerResponse = (() => {
   /** Ask the page world for its globals, then fall back to the raw HTML. */
   async function read() {
+    // Freshest source first. After a soft navigation the page global still
+    // describes the previous video, but a captured /youtubei/v1/player response
+    // describes this one.
+    const videoId = YTCMD.currentVideoId();
+    const captured = videoId ? YTCMD.bridge.get(videoId, 'playerApi') : null;
+    if (captured?.body) {
+      const player = safeParse(captured.body);
+      if (isPlausiblePlayerResponse(player) && matchesVideo(player, videoId)) {
+        return { player, initialData: null };
+      }
+    }
+
     const fromPage = await YTCMD.bridge.requestPlayerResponse();
     if (fromPage?.body) {
       const player = safeParse(fromPage.body);
@@ -52,6 +64,24 @@ YTCMD.playerResponse = (() => {
         typeof value === 'object' &&
         (value.videoDetails || value.captions || value.streamingData)
     );
+  }
+
+  /** Guard against using a player response that describes a different video. */
+  function matchesVideo(player, videoId) {
+    const id = player?.videoDetails?.videoId;
+    return !id || !videoId || id === videoId;
+  }
+
+  /**
+   * Can a zero-length track list be trusted?
+   *
+   * Only when a real player response was read. If it could not be read at all,
+   * the track list is empty because we know nothing, not because the video has
+   * no captions, and the two must never be confused: reporting "no captions"
+   * for a video that has them is the worst answer this add-on can give.
+   */
+  function isUsable(player) {
+    return isPlausiblePlayerResponse(player);
   }
 
   function safeParse(text) {
@@ -144,5 +174,5 @@ YTCMD.playerResponse = (() => {
     }
   }
 
-  return { read, captionTracks, fetchTrack, extractAssignment };
+  return { read, captionTracks, fetchTrack, extractAssignment, isUsable };
 })();

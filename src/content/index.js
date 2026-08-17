@@ -42,6 +42,9 @@ var YTCMD = YTCMD || {};
       videoId,
       meta: { ...meta, description: undefined },
       tracks: tracks.map(({ baseUrl, ...rest }) => rest),
+      // False when the player response could not be read, in which case an
+      // empty track list means "unknown", not "none".
+      tracksKnown: YTCMD.playerResponse.isUsable(player),
       hasCapture: Boolean(
         YTCMD.bridge.get(videoId, 'timedtext') ??
           YTCMD.bridge.get(videoId, 'getTranscript')

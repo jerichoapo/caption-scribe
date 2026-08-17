@@ -19,11 +19,17 @@
   const CHANNEL = 'ytcmd-page';
   const TIMEDTEXT = '/api/timedtext';
   const TRANSCRIPT = '/youtubei/v1/get_transcript';
+  // YouTube refetches player data over this endpoint on a soft navigation,
+  // when the page-level ytInitialPlayerResponse global still describes the
+  // video the user arrived on. Capturing it is the only way to get a caption
+  // track list that matches the video actually being watched.
+  const PLAYER = '/youtubei/v1/player';
 
   const classify = (url) => {
     if (typeof url !== 'string') return null;
     if (url.includes(TIMEDTEXT)) return 'timedtext';
     if (url.includes(TRANSCRIPT)) return 'getTranscript';
+    if (url.includes(PLAYER)) return 'playerApi';
     return null;
   };
 
