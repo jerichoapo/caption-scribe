@@ -76,9 +76,23 @@ YTCMD.acquire = (function () {
 
     // 3. Let the page fetch it. The interceptor reads the response.
     onProgress('Opening the transcript panel');
-    let weOpenedIt = false;
+    // Restore whatever the panel state was on arrival. The user may have opened
+    // it deliberately, and closing it under them would be rude.
+    const wasOpenOnArrival = YTCMD.panel.isOpen();
     try {
-      weOpenedIt = await YTCMD.panel.open();
+      const opened = await YTCMD.panel.open();
+
+      // A panel that was already open issues no new request, so there would be
+      // nothing to capture: the wait below would burn its whole timeout and
+      // then fall through to the DOM scrape, losing real timings for no reason.
+      // Reaching this rung means nothing was captured, so force a refetch by
+      // closing and reopening. This is the state left behind by a previous
+      // failed attempt, which is exactly when a retry needs to work.
+      if (!opened && !YTCMD.bridge.get(videoId, 'getTranscript')) {
+        onProgress('Reopening the transcript panel');
+        await YTCMD.panel.close();
+        await YTCMD.panel.open();
+      }
     } catch (err) {
       if (err?.message === 'NO_TRANSCRIPT_BUTTON') {
         throw fail(
@@ -116,7 +130,7 @@ YTCMD.acquire = (function () {
 
     if (captured?.body) {
       const panelLanguage = YTCMD.panel.currentLanguageLabel();
-      if (weOpenedIt) await YTCMD.panel.close();
+      if (!wasOpenOnArrival) await YTCMD.panel.close();
       return {
         ...result(captured.body, meta, chosen, tracks, 'panel-network', false),
         panelLanguage,
@@ -127,7 +141,7 @@ YTCMD.acquire = (function () {
     // 4. The panel is open but its network response never landed. Read the DOM.
     onProgress('Reading the transcript panel');
     const scraped = YTCMD.panel.scrape();
-    if (weOpenedIt) await YTCMD.panel.close();
+    if (!wasOpenOnArrival) await YTCMD.panel.close();
 
     if (scraped?.length) {
       return {

@@ -58,12 +58,20 @@ YTCMD.panel = (() => {
     return true;
   }
 
+  /**
+   * Close the panel and wait until it has actually gone. Callers may reopen it
+   * immediately afterwards, and reopening while the DOM still reports it as
+   * open would be a no-op.
+   */
   async function close() {
     const button = YTCMD.pick(YTCMD.SELECTORS.closePanel);
-    if (button) {
-      button.click();
-      await sleep(120);
-    }
+    if (!button) return false;
+    button.click();
+    const closed = await waitFor(() => (isOpen() ? null : true), {
+      timeout: 1500,
+      interval: 100,
+    });
+    return Boolean(closed);
   }
 
   /** The language the panel footer currently shows, as displayed text. */

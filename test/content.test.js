@@ -70,6 +70,7 @@ function stub(YTCMD, { player, tracks, panelPayload = null, panelThrows = null }
   YTCMD.bridge.get = () => null;
   YTCMD.bridge.waitFor = async () => (panelPayload ? { body: panelPayload, at: 1 } : null);
 
+  YTCMD.panel.isOpen = () => false;
   YTCMD.panel.open = async () => {
     if (panelThrows) throw new Error(panelThrows);
     return true;
@@ -79,6 +80,15 @@ function stub(YTCMD, { player, tracks, panelPayload = null, panelThrows = null }
   YTCMD.panel.currentLanguageLabel = () => 'English';
   YTCMD.panel.selectLanguage = async () => true;
 }
+
+const GATED_TRACK = {
+  index: 0,
+  lang: 'en',
+  kind: 'asr',
+  name: 'English (auto-generated)',
+  baseUrl: 'https://www.youtube.com/api/timedtext?v=x&exp=xpe',
+  tokenGated: true,
+};
 
 const REAL_PLAYER = {
   videoDetails: { videoId: '5kDU67RVIhY', title: 'A Video', author: 'A Channel' },
@@ -159,6 +169,53 @@ test('a known track list still takes the panel path when the fetch is gated', as
   const outcome = await YTCMD.acquire.run({});
   assert.equal(outcome.source, 'panel-network');
   assert.equal(outcome.track.lang, 'en');
+});
+
+test('an already-open panel is closed and reopened so a request actually fires', async () => {
+  // The retry bug. A failed first attempt can leave the panel open. Opening an
+  // open panel issues no request, so without this the wait stalls for its full
+  // timeout and falls through to the DOM scrape.
+  const YTCMD = loadContentScripts();
+  stub(YTCMD, { player: REAL_PLAYER, tracks: [GATED_TRACK], panelPayload: PANEL_PAYLOAD });
+
+  const calls = [];
+  let opens = 0;
+  YTCMD.panel.isOpen = () => true; // left open by a previous failed attempt
+  YTCMD.panel.open = async () => {
+    calls.push('open');
+    opens += 1;
+    return opens > 1; // first call finds it already open
+  };
+  YTCMD.panel.close = async () => {
+    calls.push('close');
+    return true;
+  };
+
+  const outcome = await YTCMD.acquire.run({});
+  // Closed and reopened to force a request, then left open because that is how
+  // it was found.
+  assert.deepEqual(calls, ['open', 'close', 'open']);
+  assert.equal(outcome.source, 'panel-network');
+  assert.equal(outcome.timingsSynthesized, false);
+});
+
+test('a panel we opened ourselves is not needlessly closed and reopened', async () => {
+  const YTCMD = loadContentScripts();
+  stub(YTCMD, { player: REAL_PLAYER, tracks: [GATED_TRACK], panelPayload: PANEL_PAYLOAD });
+
+  const calls = [];
+  YTCMD.panel.open = async () => {
+    calls.push('open');
+    return true;
+  };
+  YTCMD.panel.close = async () => {
+    calls.push('close');
+    return true;
+  };
+
+  await YTCMD.acquire.run({});
+  // One open, then one close at the end because we opened it.
+  assert.deepEqual(calls, ['open', 'close']);
 });
 
 test('no panel and no readable tracks fails with a message naming the next step', async () => {
